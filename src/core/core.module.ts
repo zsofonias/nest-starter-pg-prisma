@@ -3,22 +3,32 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
-import config from 'src/config';
 import { LoggerService } from './logger/logger.service';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
+
+import config from 'src/config';
+
+import cacheConfig from 'src/config/cache.config';
+import { CacheModule } from './cache/cache.module';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config],
+      load: [config, cacheConfig],
     }),
+    CacheModule,
   ],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
     },
     LoggerService,
   ],
