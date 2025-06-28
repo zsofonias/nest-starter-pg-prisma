@@ -11,7 +11,7 @@ export class TransformResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((response) => {
-        if (!response) {
+        if (response === null || response === undefined) {
           return {
             data: {},
           };
@@ -23,7 +23,7 @@ export class TransformResponseInterceptor implements NestInterceptor {
           };
         }
 
-        return { response };
+        return { data: response };
       }),
     );
   }
